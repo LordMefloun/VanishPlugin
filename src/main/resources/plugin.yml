@@ -3,3 +3,6 @@ version: '${project.version}'
 main: me.lordmefloun.vanish.Vanish
 authors: [ LordMefloun ]
 description: Vanish plugin with mysql
+commands:
+  vanish:
+    description: main command

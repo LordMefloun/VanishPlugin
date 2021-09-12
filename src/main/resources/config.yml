@@ -1,0 +1,11 @@
+database:
+  host: localhost
+  port: 3306
+  database: mcdb
+  user: root
+  password:
+  table: vanished_players
+
+actionbar: "&aNyní jsi neviditelný pro ostatní hráče! &l/vanish pro vypnutí"
+onMessage: "&aTvůj vanish mód byl změněn na &cVypnuto"
+offMessage: "&aTvůj vanish mód byl změněn na &aZapnuto"
