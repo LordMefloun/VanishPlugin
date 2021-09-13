@@ -15,7 +15,7 @@ public class Events implements Listener {
     public void onJoin(PlayerJoinEvent e){
 
 
-        mysql mysql = new mysql();
+        MySql mysql = plugin.mysql;
 
         Player p = e.getPlayer();
 
@@ -23,7 +23,7 @@ public class Events implements Listener {
 
             plugin.vanishedPlayers.put(p.getUniqueId(), false);
 
-            if(!mysql.VanishStateExists(p.getUniqueId())){
+            if(!mysql.vanishStateExists(p.getUniqueId())){
                 mysql.createVanishState(p.getUniqueId(), false);
             }
             plugin.vanishedPlayers.put(p.getUniqueId(), mysql.getVanishState(p.getUniqueId()));
@@ -35,7 +35,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
-        mysql mysql = new mysql();
+        MySql mysql = new MySql();
 
         Player p = e.getPlayer();
 

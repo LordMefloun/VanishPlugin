@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 
 public class VanishCommand implements CommandExecutor {
 
-    mysql mysql = new mysql();
-
     Vanish plugin;
+    MySql mysql = plugin.mysql;
+
 
     public VanishCommand (Vanish plugin){
         this.plugin = plugin;
@@ -39,7 +39,7 @@ public class VanishCommand implements CommandExecutor {
                 plugin.updateVanishPlayers();
             }
             else{
-                p.sendMessage(ChatColor.RED + "Nemáš na tohle pravomoce");
+                Utils.sendMessage(p, "&cNemáš na tohle pravomoce");
             }
         }
 
@@ -51,7 +51,7 @@ public class VanishCommand implements CommandExecutor {
         }
 
         if (args.length > 1){
-            p.sendMessage(ChatColor.RED + "&cNeplatné použití příkazu");
+            Utils.sendMessage(p, "&cNeplatné použití příkazu");
         }
 
         return false;
@@ -70,10 +70,10 @@ public class VanishCommand implements CommandExecutor {
 
 
             if (plugin.vanishedPlayers.get(p.getUniqueId())){
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',  plugin.getConfig().getString("offMessage")));
+                Utils.sendMessage(p, plugin.getConfig().getString("offMessage"));
             }
             else{
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',  plugin.getConfig().getString("onMessage")));
+                Utils.sendMessage(p, plugin.getConfig().getString("onMessage"));
             }
 
         }else{
@@ -89,10 +89,10 @@ public class VanishCommand implements CommandExecutor {
             }
 
             if (plugin.vanishedPlayers.get(p.getUniqueId())){
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',  plugin.getConfig().getString("offMessage")));
+                Utils.sendMessage(p, plugin.getConfig().getString("offMessage"));
             }
             else{
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&',  plugin.getConfig().getString("onMessage")));
+                Utils.sendMessage(p, plugin.getConfig().getString("onMessage"));
             }
         }
     }

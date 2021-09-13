@@ -16,12 +16,9 @@ import java.util.UUID;
 
 public final class Vanish extends JavaPlugin {
 
-    private Connection connection;
-    public String host, database, username, password, table;
-    public String offmessage;
-    public String onmessage;
-    public int port;
     public HashMap<UUID, Boolean> vanishedPlayers = new HashMap<>();
+
+    public MySql mysql = new MySql();
 
     @Override
     public void onEnable() {
@@ -29,11 +26,11 @@ public final class Vanish extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Events(), this);
         saveDefaultConfig();
 
-        offmessage = getConfig().getString("messages.off");
-        onmessage = getConfig().getString("messages.on");
 
-        mysqlSetup();
-        actionbar();
+        mysql.mysqlSetup();
+        ActionbarRunnable actionbar = new ActionbarRunnable(this);
+
+        actionbar.actionbar();
 
     }
 
@@ -42,45 +39,11 @@ public final class Vanish extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public void mysqlSetup() {
-        host = getConfig().getString("database.host");
-        port = getConfig().getInt("database.port");
-        database = getConfig().getString("database.database");
-        username = getConfig().getString("database.user");
-        password = getConfig().getString("database.password");
-        table = getConfig().getString("database.table");
-        
-        
-        try{
-            synchronized (this){
-                if (getConnection() != null && !getConnection().isClosed() ) {
-                    return;
-                }
-
-                Class.forName("com.mysql.jdbc.Driver");
-                setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" +
-                        this.port + "/" + this.database, this.username, this.password));
-                Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "MySQL connection successfull");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try {
-            PreparedStatement statement = this.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `"+ database +"`.`" + table + "` ( `id` INT(225) NOT NULL AUTO_INCREMENT , `player` VARCHAR(225) NOT NULL , `vanished` BOOLEAN NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-            statement.execute();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void updateVanishPlayers(){
 
         for (Map.Entry<UUID, Boolean> entry : vanishedPlayers.entrySet()) {
-            if(entry.getValue() == true) {
+            if(entry.getValue()) {
 
                 Player p = Bukkit.getPlayer(entry.getKey());
 
@@ -106,30 +69,4 @@ public final class Vanish extends JavaPlugin {
 
 
 
-    public void actionbar(){
-        new BukkitRunnable(){
-
-            @Override
-            public void run(){
-                for (Map.Entry<UUID, Boolean> entry : vanishedPlayers.entrySet()) {
-                    if(entry.getValue() == true) {
-
-                        Player p = Bukkit.getPlayer(entry.getKey());
-
-                        p.sendActionBar(ChatColor.translateAlternateColorCodes('&',  getConfig().getString("actionbar")));
-
-                    }
-                }
-            }
-        }.runTaskTimer(this, 0, 20);
-    }
-
-
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
 }
