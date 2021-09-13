@@ -9,7 +9,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class Events implements Listener {
 
 
-    Vanish plugin = Vanish.getPlugin(Vanish.class);
+    Vanish plugin;
+
+    public Events (Vanish plugin){
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
@@ -35,12 +39,13 @@ public class Events implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e){
-        MySql mysql = new MySql();
+        MySql mysql = plugin.mysql;
 
         Player p = e.getPlayer();
 
 
         mysql.setVanishState(p.getUniqueId() ,plugin.vanishedPlayers.get(p.getUniqueId()));
+        plugin.vanishedPlayers.remove(p.getUniqueId());
     }
 
 }

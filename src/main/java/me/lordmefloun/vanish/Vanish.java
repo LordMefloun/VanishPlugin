@@ -16,14 +16,19 @@ import java.util.UUID;
 
 public final class Vanish extends JavaPlugin {
 
+
+
+
+
+
     public HashMap<UUID, Boolean> vanishedPlayers = new HashMap<>();
 
-    public MySql mysql = new MySql();
+    public MySql mysql = new MySql(this);
 
     @Override
     public void onEnable() {
         getCommand("vanish").setExecutor(new VanishCommand(this));
-        getServer().getPluginManager().registerEvents(new Events(), this);
+        getServer().getPluginManager().registerEvents(new Events(this), this);
         saveDefaultConfig();
 
 
@@ -66,7 +71,6 @@ public final class Vanish extends JavaPlugin {
         }
 
     }
-
 
 
 }

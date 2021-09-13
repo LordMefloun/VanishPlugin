@@ -9,18 +9,55 @@ import java.util.UUID;
 public class MySql {
 
 
+    Vanish plugin;
+
     private Connection connection;
-    Vanish plugin = Vanish.getPlugin(Vanish.class);
     public String host, database, username, password, table;
     public int port;
 
-    public Connection getConnection() {
-        return connection;
+
+    public MySql(Vanish plugin){
+
+        this.plugin = plugin;
+
     }
 
-    public void setConnection(Connection connection) {
-        this.connection = connection;
+
+    public void mysqlSetup() {
+        host = plugin.getConfig().getString("database.host");
+        port = plugin.getConfig().getInt("database.port");
+        database = plugin.getConfig().getString("database.database");
+        username = plugin.getConfig().getString("database.user");
+        password = plugin.getConfig().getString("database.password");
+        table = plugin.getConfig().getString("database.table");
+
+
+        try{
+            synchronized (this){
+                if (getConnection() != null && !getConnection().isClosed() ) {
+                    return;
+                }
+
+                Class.forName("com.mysql.jdbc.Driver");
+                setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" +
+                        this.port + "/" + this.database, this.username, this.password));
+                Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "MySQL connection successfull");
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
+
+        try {
+            PreparedStatement statement = this.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `"+ database +"`.`" + table + "` ( `id` INT(225) NOT NULL AUTO_INCREMENT , `player` VARCHAR(225) NOT NULL , `vanished` BOOLEAN NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
+            statement.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public boolean getVanishState(UUID uuid) {
         try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE player=?")){
@@ -59,40 +96,7 @@ public class MySql {
         return false;
     }
 
-    public void mysqlSetup() {
-        host = plugin.getConfig().getString("database.host");
-        port = plugin.getConfig().getInt("database.port");
-        database = plugin.getConfig().getString("database.database");
-        username = plugin.getConfig().getString("database.user");
-        password = plugin.getConfig().getString("database.password");
-        table = plugin.getConfig().getString("database.table");
 
-
-        try {
-            synchronized (this){
-                if (getConnection() != null && !getConnection().isClosed() ) {
-                    return;
-                }
-
-                Class.forName("me.lordmefloun.vanish.MySql.jdbc.Driver");
-                setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" +
-                        this.port + "/" + this.database, this.username, this.password));
-                Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "MySQL connection successfull");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try {
-            PreparedStatement statement = this.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `"+ database +"`.`" + table + "` ( `id` INT(225) NOT NULL AUTO_INCREMENT , `player` VARCHAR(225) NOT NULL , `vanished` BOOLEAN NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;");
-            statement.execute();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void createVanishState(UUID uuid, boolean state){
         try (PreparedStatement statement = getConnection().prepareStatement("INSERT INTO " + table + " (player, vanished) VALUES (?,?)")){
@@ -132,6 +136,19 @@ public class MySql {
             e.printStackTrace();
         }
     }
+
+
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+
+
 
 
 

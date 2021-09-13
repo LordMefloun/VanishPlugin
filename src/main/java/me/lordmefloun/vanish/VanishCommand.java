@@ -12,18 +12,17 @@ import org.bukkit.entity.Player;
 public class VanishCommand implements CommandExecutor {
 
     Vanish plugin;
-    MySql mysql = plugin.mysql;
-
 
     public VanishCommand (Vanish plugin){
         this.plugin = plugin;
     }
 
 
+
+
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-
         if(!(sender instanceof Player)){
             return false;
         }
@@ -37,6 +36,7 @@ public class VanishCommand implements CommandExecutor {
                 Player player = Bukkit.getPlayer(args[0]);
                 vanishPlayer(player);
                 plugin.updateVanishPlayers();
+                Utils.sendMessage(p, "&aZměnil jsi vanish mod hrači &6" + player.getName());
             }
             else{
                 Utils.sendMessage(p, "&cNemáš na tohle pravomoce");
@@ -59,6 +59,9 @@ public class VanishCommand implements CommandExecutor {
 
 
     public void vanishPlayer(Player p){
+
+        MySql mysql = plugin.mysql;
+
         if (plugin.vanishedPlayers.get(p.getUniqueId()) != null) {
             if (plugin.vanishedPlayers.get(p.getUniqueId())) {
 
